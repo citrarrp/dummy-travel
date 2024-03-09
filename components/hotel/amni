@@ -1,8 +1,8 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Hotel, Room } from "@prisma/client";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
   Form,
@@ -26,27 +26,27 @@ interface AddHotelFormProps {
 }
 
 export type HotelWithRooms = Hotel & {
-  rooms: Room[];
+  rooms: Room[],
 };
 
 const formSchema = z.object({
-  title: z.string().min(3, { message: "Title must be atlist 3 chars long" }),
+  title: z.string().min(3, { message: "Title must be atleast 3 chars long" }),
   description: z
     .string()
-    .min(9, { message: "Description must be atlist 9 chars long" }),
+    .min(9, { message: "Description must be atleast 9 chars long" }),
   image: z.string().min(1, { message: "Image is required" }),
-  country: z.string().min(1, { message: "country is required" }),
+  country: z.string().min(1, { message: "Image is required" }),
   state: z.string().optional(),
   city: z.string().optional(),
   locationDescription: z
     .string()
-    .min(9, { message: "Description must be atlist 9 chars long" }),
+    .min(9, { message: "Description must be atleast 9 chars long" }),
   gym: z.boolean().optional(),
   spa: z.boolean().optional(),
   bar: z.boolean().optional(),
   laundry: z.boolean().optional(),
   restaurant: z.boolean().optional(),
-  swiming_poll: z.boolean().optional(),
+  swimming_pool: z.boolean().optional(),
   cineplex: z.boolean().optional(),
   free_wifi: z.boolean().optional(),
   sports_zone: z.boolean().optional(),
@@ -54,35 +54,40 @@ const formSchema = z.object({
 });
 
 const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
-  const [image, setImage] = useState<string | undefined>(hotel?.image);
+  const [image, setImage] = (useState < string) | (undefined > hotel?.image);
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      image: "",
-      country: "",
-      state: "",
-      city: "",
-      locationDescription: "",
-      gym: false,
-      spa: false,
-      bar: false,
-      laundry: false,
-      restaurant: false,
-      swiming_poll: false,
-      cineplex: false,
-      free_wifi: false,
-      sports_zone: false,
-      medical_service: false,
-    },
-  });
+  const form =
+    useForm <
+    z.infer <
+    typeof formSchema >>
+      {
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+          title: "",
+          description: "",
+          image: "",
+          country: "",
+          state: "",
+          city: "",
+          locationDescription: "",
+          gym: false,
+          spa: false,
+          bar: false,
+          laundry: false,
+          restaurant: false,
+          swimming_pool: false,
+          cineplex: false,
+          free_wifi: false,
+          sports_zone: false,
+          medical_service: false,
+        },
+      };
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
   }
+
   return (
     <div>
       <Form {...form}>
@@ -91,10 +96,9 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
             {hotel ? "Update your hotel" : "Add a hotel"}
           </h2>
           <div className="flex flex-col md:flex-row gap-5">
-            {/* left div  */}
-            <div className="flex-1 flex flex-col gap-5 ">
-              {/* Title  */}
-
+            {/* LEFT */}
+            <div className="flex-1 flex flex-col gap-5">
+              {/* TITLE */}
               <FormField
                 control={form.control}
                 name="title"
@@ -103,16 +107,13 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                     <FormLabel>Hotel title</FormLabel>
                     <FormDescription>Enter your hotel title</FormDescription>
                     <FormControl>
-                      <Input placeholder="Seawing hotel" {...field} />
+                      <Input placeholder="Seawing Hotel" {...field} />
                     </FormControl>
-
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
-              {/* Description  */}
-
+              {/* DESCRIPTION */}
               <FormField
                 control={form.control}
                 name="description"
@@ -125,20 +126,16 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                     <FormControl>
                       <Textarea placeholder="Describe your hotel" {...field} />
                     </FormControl>
-
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
-              {/* Facilities  */}
-
+              {/* FACILITIES */}
               <div>
                 <FormLabel>Choose facilities</FormLabel>
                 <FormDescription>
                   Choose popular facilities in your hotel
                 </FormDescription>
-
                 <div className="grid grid-cols-2 gap-5 mt-2">
                   <FormField
                     control={form.control}
@@ -152,7 +149,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Gym</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -169,7 +165,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Spa</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -186,7 +181,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Bar</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -203,7 +197,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Laundry</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -220,14 +213,13 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Restaurant</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
-                    name="swiming_poll"
+                    name="swimming_pool"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-end gap-2">
                         <FormControl>
@@ -236,8 +228,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
-                        <FormLabel>Swiming Pool</FormLabel>
-
+                        <FormLabel>Swimming Pool</FormLabel>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -254,7 +245,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Cineplex</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -271,7 +261,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Free Wifi</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -288,7 +277,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Sports Zone</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -305,13 +293,13 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Medical Service</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
               </div>
+
               <FormField
                 control={form.control}
                 name="image"
@@ -321,7 +309,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                     <FormDescription>Upload a hotel image</FormDescription>
                     <FormControl>
                       {image ? (
-                        <div className="relative max-w-[400px] min-w-[400px]  max-h-[400px] min-h-[400px] mt-4">
+                        <div className="relative max-w-[400px] min-w-[400px] max-h-[400px] min-h-[400px] mt-4">
                           <Image
                             fill
                             src={image}
@@ -334,7 +322,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           <UploadButton
                             endpoint="imageUploader"
                             onClientUploadComplete={(res) => {
-                              // Do something with the response
                               console.log("Files: ", res);
                               setImage(res[0].url);
                               toast({
@@ -359,8 +346,8 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
               />
             </div>
 
-            {/* right div  */}
-            <div className="flex-1 flex flex-col gap-5 ">Right</div>
+            {/* RIGHT */}
+            <div className="flex-1 flex flex-col gap-5">Right</div>
           </div>
         </form>
       </Form>
