@@ -16,15 +16,15 @@ import {
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Checkbox } from "../ui/checkbox";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { UploadButton } from "../ui/uploadthing";
 import { useToast } from "../ui/use-toast";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { Loader2, XCircle } from "lucide-react";
+import { Loader2, Pencil, XCircle } from "lucide-react";
 import axios from "axios";
 import { useLocation } from "@/hooks/useLocation";
-import { Country, ICity, IState } from "country-state-city";
+import { ICity, IState } from "country-state-city";
 import {
   Select,
   SelectContent,
@@ -104,6 +104,17 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
       medical_service: false,
     },
   });
+
+  useEffect(() => {
+    if (typeof image === "string") {
+      form.setValue("image", image, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [image]);
 
   useEffect(() => {
     const selectedCountry = form.watch("country");
@@ -441,16 +452,90 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
             </div>
 
             {/* right div  */}
-            <div className="flex-1 flex flex-col gap-5 "></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="flex-1 flex flex-col gap-5 ">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Select Country</FormLabel>
+                      <FormDescription>
+                        Please select the country where your hotel is located
+                      </FormDescription>
+
+                      <Select
+                        disabled={isLoading}
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className="bg-background">
+                          <SelectValue
+                            placeholder="Select a country"
+                            defaultValue={field.value}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {countries.map((country) => (
+                            <SelectItem
+                              key={country.isoCode}
+                              value={country.isoCode}
+                            >
+                              {country.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="state"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Select State</FormLabel>
+                      <FormDescription>
+                        Please select the state where your hotel is located
+                      </FormDescription>
+
+                      <Select
+                        disabled={isLoading || !states.length}
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className="bg-background">
+                          <SelectValue
+                            placeholder="Select a State"
+                            defaultValue={field.value}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {states.map((state) => (
+                            <SelectItem
+                              key={state.isoCode}
+                              value={state.isoCode}
+                            >
+                              {state.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </div>
               <FormField
                 control={form.control}
-                name="country"
+                name="city"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Select Country</FormLabel>
+                    <FormLabel>Select City</FormLabel>
                     <FormDescription>
-                      Please select the country where your hotel is located
+                      Please select the city where your hotel is located
                     </FormDescription>
 
                     <Select
@@ -461,22 +546,16 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                     >
                       <SelectTrigger className="bg-background">
                         <SelectValue
-                          placeholder="Select a country"
+                          placeholder="Select a City"
                           defaultValue={field.value}
                         />
                       </SelectTrigger>
                       <SelectContent>
-                        {countries.map((country) => (
-                          <SelectItem
-                            key={country.isoCode}
-                            value={country.isoCode}
-                          >
-                            {country.name}
+                        {cities.map((city) => (
+                          <SelectItem key={city.name} value={city.name}>
+                            {city.name}
                           </SelectItem>
                         ))}
-
-                        <SelectItem value="dark">Dark</SelectItem>
-                        <SelectItem value="system">System</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormItem>
@@ -485,40 +564,57 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
 
               <FormField
                 control={form.control}
-                name="state"
+                name="locationDescription"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Select State</FormLabel>
+                    <FormLabel>Location description</FormLabel>
                     <FormDescription>
-                      Please select the state where your hotel is located
+                      Enter your location description
                     </FormDescription>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe your location"
+                        {...field}
+                      />
+                    </FormControl>
 
-                    <Select
-                      disabled={isLoading || !states.length}
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger className="bg-background">
-                        <SelectValue
-                          placeholder="Select a State"
-                          defaultValue={field.value}
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {states.map((state) => (
-                          <SelectItem key={state.isoCode} value={state.isoCode}>
-                            {state.name}
-                          </SelectItem>
-                        ))}
-
-                        <SelectItem value="dark">Dark</SelectItem>
-                        <SelectItem value="system">System</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
+              <div className="flex justify-between gap-2 flex-wrap">
+                {hotel ? (
+                  <Button className="flex items-center gap-2">
+                    {isLoading ? (
+                      <>
+                        {" "}
+                        <Loader2 className="h-4 w-4" /> Updating
+                      </>
+                    ) : (
+                      <>
+                        {" "}
+                        <Pencil className="h-4 w-4" />
+                        Update
+                      </>
+                    )}
+                  </Button>
+                ) : (
+                  <Button className="flex items-center gap-2">
+                    {isLoading ? (
+                      <>
+                        {" "}
+                        <Loader2 className="h-4 w-4" /> Creating
+                      </>
+                    ) : (
+                      <>
+                        {" "}
+                        <Pencil className="h-4 w-4" />
+                        Create
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </form>
