@@ -32,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useRouter } from "next/navigation";
 
 interface AddHotelFormProps {
   hotel: HotelWithRooms | null;
@@ -75,6 +76,8 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
 
   const [isLoading, setISLoading] = useState<boolean>(false);
 
+  const router = useRouter();
+
   const { toast } = useToast();
 
   const { getAllCountries, getCountrySates, getCountryByCode, getStateCities } =
@@ -84,7 +87,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: hotel || {
       title: "",
       description: "",
       image: "",
@@ -133,7 +136,46 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
   }, [form.watch("country", form.watch("state"))]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    setISLoading(true);
+
+    if (hotel) {
+      axios
+        .patch(`/api/hotel/${hotel.id}`, values)
+        .then((res) => {
+          toast({
+            title: "Hotel Updated!",
+            description: "Your hotel is successfully updated.",
+          });
+          router.push(`/hotel/${res.data.id}`);
+          setISLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      toast({
+        variant: "destructive",
+        description: "Something went worng",
+      });
+    } else {
+      axios
+        .post("/api/hotel", values)
+        .then((res) => {
+          toast({
+            title: "Hotel created!",
+            description: "Your hotel is successfully added.",
+          });
+          router.push(`/hotel/${res.data.id}`);
+          setISLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      toast({
+        variant: "destructive",
+        description: "Something went worng",
+      });
+      setISLoading(false);
+    }
   }
 
   const handleImageDelete = (image: string) => {
@@ -588,12 +630,12 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                     {isLoading ? (
                       <>
                         {" "}
-                        <Loader2 className="h-4 w-4" /> Updating
+                        <Loader2 className="h-4 w-4 animate-spin" /> Updating
                       </>
                     ) : (
                       <>
                         {" "}
-                        <Pencil className="h-4 w-4" />
+                        <Pencil className="h-4 w-4 " />
                         Update
                       </>
                     )}
@@ -603,12 +645,12 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                     {isLoading ? (
                       <>
                         {" "}
-                        <Loader2 className="h-4 w-4" /> Creating
+                        <Loader2 className="h-4 w-4 animate-spin" /> Creating
                       </>
                     ) : (
                       <>
                         {" "}
-                        <Pencil className="h-4 w-4" />
+                        <Pencil className="h-4 w-4 clear" />
                         Create
                       </>
                     )}
