@@ -42,6 +42,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
+import AddRoomForm from "../room/AddRoomForm";
 
 interface AddHotelFormProps {
   hotel: HotelWithRooms | null;
@@ -692,6 +693,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
 
                 {hotel && (
                   <Button
+                    type="button"
                     onClick={() => router.push(`/hotel-details/${hotel.id}`)}
                     variant="outline"
                   >
@@ -702,23 +704,31 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                 {hotel && (
                   <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger>
-                      <Button type="button">
+                      <Button type="button" variant={"outline"}>
                         <Plus className="mr-2 h-4 w-4" /> Add Room
                       </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="max-w-5xl">
                       <DialogHeader>
                         <DialogTitle>Add Room</DialogTitle>
                         <DialogDescription>
                           Add a room details carefully for your hotel.
                         </DialogDescription>
                       </DialogHeader>
+                      <AddRoomForm
+                        hotel={hotel}
+                        handleDialougeOpen={() => setOpen((prev) => !prev)}
+                      />
                     </DialogContent>
                   </Dialog>
                 )}
 
                 {hotel ? (
-                  <Button type="submit" className="flex items-center gap-2">
+                  <Button
+                    disabled={isLoading}
+                    type="submit"
+                    className="flex items-center gap-2"
+                  >
                     {isLoading ? (
                       <>
                         {" "}
@@ -733,7 +743,11 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                     )}
                   </Button>
                 ) : (
-                  <Button type="submit" className="flex items-center gap-2">
+                  <Button
+                    disabled={isLoading}
+                    type="submit"
+                    className="flex items-center gap-2"
+                  >
                     {isLoading ? (
                       <>
                         {" "}
