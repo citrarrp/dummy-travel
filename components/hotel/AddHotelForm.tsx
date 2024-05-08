@@ -20,7 +20,7 @@ import { use, useEffect, useState } from "react";
 import { UploadButton } from "../ui/uploadthing";
 import { useToast } from "../ui/use-toast";
 import Image from "next/image";
-import { Button } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import { Loader2, Pencil, Plus, Terminal, XCircle } from "lucide-react";
 import axios from "axios";
 import { useLocation } from "@/hooks/useLocation";
@@ -43,6 +43,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import AddRoomForm from "../room/AddRoomForm";
+import { cn } from "@/lib/utils";
 
 interface AddHotelFormProps {
   hotel: HotelWithRooms | null;
@@ -703,21 +704,19 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
 
                 {hotel && (
                   <Dialog open={open} onOpenChange={setOpen}>
-                    <DialogTrigger>
-                      <Button type="button" variant={"outline"}>
-                        <Plus className="mr-2 h-4 w-4" /> Add Room
-                      </Button>
+                    <DialogTrigger className={buttonVariants()}>
+                      Add a Room
                     </DialogTrigger>
                     <DialogContent className="max-w-5xl">
                       <DialogHeader>
-                        <DialogTitle>Add Room</DialogTitle>
+                        <DialogTitle>Add a Room</DialogTitle>
                         <DialogDescription>
                           Add a room details carefully for your hotel.
                         </DialogDescription>
                       </DialogHeader>
                       <AddRoomForm
                         hotel={hotel}
-                        handleDialougeOpen={() => setOpen((prev) => !prev)}
+                        handleDialogueOpen={() => setOpen((prev) => !prev)}
                       />
                     </DialogContent>
                   </Dialog>
