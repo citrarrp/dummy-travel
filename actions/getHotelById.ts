@@ -1,4 +1,5 @@
 import prisma from "@/lib/db";
+
 export const getHotelById = async (hotelId: string) => {
   try {
     const hotel = await prisma.hotel.findUnique({

@@ -1,9 +1,35 @@
 "use client";
 
-import { Hotel, Room } from "@prisma/client";
-import { useForm } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useLocation } from "@/hooks/useLocation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Hotel, Room } from "@prisma/client";
+import axios from "axios";
+import { ICity, IState } from "country-state-city";
+import { Loader2, Pencil, Terminal, XCircle } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
+import AddRoomForm from "../room/AddRoomForm";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { Button, buttonVariants } from "../ui/button";
+import { Checkbox } from "../ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 import {
   Form,
   FormControl,
@@ -15,36 +41,10 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { Checkbox } from "../ui/checkbox";
-import { use, useEffect, useState } from "react";
 import { UploadButton } from "../ui/uploadthing";
 import { useToast } from "../ui/use-toast";
-import Image from "next/image";
-import { Button, buttonVariants } from "../ui/button";
-import { Loader2, Pencil, Plus, Terminal, XCircle } from "lucide-react";
-import axios from "axios";
-import { useLocation } from "@/hooks/useLocation";
-import { ICity, IState } from "country-state-city";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useRouter } from "next/navigation";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
-import AddRoomForm from "../room/AddRoomForm";
-import { cn } from "@/lib/utils";
 import RoomCard from "../room/RoomCard";
+import { Separator } from "../ui/separator";
 
 interface AddHotelFormProps {
   hotel: HotelWithRooms | null;
@@ -55,23 +55,23 @@ export type HotelWithRooms = Hotel & {
 };
 
 const formSchema = z.object({
-  title: z.string().min(3, { message: "Title must be atlist 3 chars long" }),
+  title: z.string().min(3, { message: "Title must be atleast 3 chars long" }),
   description: z
     .string()
-    .min(9, { message: "Description must be atlist 9 chars long" }),
+    .min(9, { message: "Description must be atleast 9 chars long" }),
   image: z.string().min(1, { message: "Image is required" }),
-  country: z.string().min(1, { message: "country is required" }),
+  country: z.string().min(1, { message: "Image is required" }),
   state: z.string().optional(),
   city: z.string().optional(),
   locationDescription: z
     .string()
-    .min(9, { message: "Description must be atlist 9 chars long" }),
+    .min(9, { message: "Description must be atleast 9 chars long" }),
   gym: z.boolean().optional(),
   spa: z.boolean().optional(),
   bar: z.boolean().optional(),
   laundry: z.boolean().optional(),
   restaurant: z.boolean().optional(),
-  swiming_poll: z.boolean().optional(),
+  swimming_pool: z.boolean().optional(),
   cineplex: z.boolean().optional(),
   free_wifi: z.boolean().optional(),
   sports_zone: z.boolean().optional(),
@@ -81,23 +81,23 @@ const formSchema = z.object({
 const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
   const [image, setImage] = useState<string | undefined>(hotel?.image);
   const [shouldImageDelete, setShouldImageDelete] = useState<boolean>(false);
-
-  const [states, SetStates] = useState<IState[]>([]);
-
-  const [cities, SetCtities] = useState<ICity[]>([]);
-
-  const [isLoading, setISLoading] = useState<boolean>(false);
+  const [states, setStates] = useState<IState[]>([]);
+  const [cities, setCities] = useState<ICity[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isHotelDeleting, setIsHotelDeleting] = useState<boolean>(false);
-
   const [open, setOpen] = useState<boolean>(false);
 
   const router = useRouter();
 
   const { toast } = useToast();
 
-  const { getAllCountries, getCountrySates, getCountryByCode, getStateCities } =
-    useLocation();
-
+  const {
+    getAllCountries,
+    getCountryStates,
+    getCountryByCode,
+    getStateByCode,
+    getStateCities,
+  } = useLocation();
   const countries = getAllCountries();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -115,7 +115,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
       bar: false,
       laundry: false,
       restaurant: false,
-      swiming_poll: false,
+      swimming_pool: false,
       cineplex: false,
       free_wifi: false,
       sports_zone: false,
@@ -137,65 +137,65 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
   useEffect(() => {
     const selectedCountry = form.watch("country");
     const selectedState = form.watch("state");
-    const countryStates = getCountrySates(selectedCountry);
+
+    const countryStates = getCountryStates(selectedCountry);
     if (countryStates) {
-      SetStates(countryStates);
+      setStates(countryStates);
     }
 
     const stateCities = getStateCities(selectedCountry, selectedState);
-
     if (stateCities) {
-      SetCtities(stateCities);
+      setCities(stateCities);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form.watch("country", form.watch("state"))]);
+  }, [form.watch("country"), form.watch("state")]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    setISLoading(true);
+    setIsLoading(true);
 
     if (hotel) {
       axios
         .patch(`/api/hotel/${hotel.id}`, values)
         .then((res) => {
           toast({
-            title: "Hotel Updated!",
+            title: "Hotel updated!",
             description: "Your hotel is successfully updated.",
           });
           router.push(`/hotel/${res.data.id}`);
-          setISLoading(false);
+          setIsLoading(false);
         })
         .catch((err) => {
           console.log(err);
+          toast({
+            variant: "destructive",
+            description: "Something went wrong.",
+          });
+          setIsLoading(false);
         });
-      toast({
-        variant: "destructive",
-        description: "Something went worng",
-      });
     } else {
       axios
         .post("/api/hotel", values)
         .then((res) => {
           toast({
             title: "Hotel created!",
-            description: "Your hotel is successfully added.",
+            description: "Your hotel is successfully created.",
           });
           router.push(`/hotel/${res.data.id}`);
-          setISLoading(false);
+          setIsLoading(false);
         })
         .catch((err) => {
           console.log(err);
+          toast({
+            variant: "destructive",
+            description: "Something went wrong.",
+          });
+          setIsLoading(false);
         });
-      toast({
-        variant: "destructive",
-        description: "Something went worng",
-      });
-      setISLoading(false);
     }
   }
 
   const handleImageDelete = (image: string) => {
     setShouldImageDelete(true);
-
     const imageKey = image.substring(image.lastIndexOf("/") + 1);
 
     axios
@@ -235,7 +235,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
 
       toast({
         title: "Hotel deleted",
-        description: "Your hotel  has been successfully deleted.",
+        description: "Your hotel has been successfully deleted.",
       });
     } catch (error: any) {
       toast({
@@ -253,10 +253,9 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
             {hotel ? "Update your hotel" : "Add a hotel"}
           </h2>
           <div className="flex flex-col md:flex-row gap-5">
-            {/* left div  */}
-            <div className="flex-1 flex flex-col gap-5 ">
-              {/* Title  */}
-
+            {/* LEFT */}
+            <div className="flex-1 flex flex-col gap-5">
+              {/* TITLE */}
               <FormField
                 control={form.control}
                 name="title"
@@ -265,16 +264,14 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                     <FormLabel>Hotel title</FormLabel>
                     <FormDescription>Enter your hotel title</FormDescription>
                     <FormControl>
-                      <Input placeholder="Seawing hotel" {...field} />
+                      <Input placeholder="Seawing Hotel" {...field} />
                     </FormControl>
-
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Description  */}
-
+              {/* DESCRIPTION */}
               <FormField
                 control={form.control}
                 name="description"
@@ -287,20 +284,17 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                     <FormControl>
                       <Textarea placeholder="Describe your hotel" {...field} />
                     </FormControl>
-
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Facilities  */}
-
+              {/* FACILITIES */}
               <div>
                 <FormLabel>Choose facilities</FormLabel>
                 <FormDescription>
                   Choose popular facilities in your hotel
                 </FormDescription>
-
                 <div className="grid grid-cols-2 gap-5 mt-2">
                   <FormField
                     control={form.control}
@@ -314,7 +308,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Gym</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -331,7 +324,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Spa</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -348,7 +340,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Bar</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -365,7 +356,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Laundry</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -382,14 +372,13 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Restaurant</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
-                    name="swiming_poll"
+                    name="swimming_pool"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-end gap-2">
                         <FormControl>
@@ -398,8 +387,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
-                        <FormLabel>Swiming Pool</FormLabel>
-
+                        <FormLabel>Swimming Pool</FormLabel>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -416,7 +404,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Cineplex</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -433,7 +420,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Free Wifi</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -450,7 +436,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Sports Zone</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -467,13 +452,13 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                           />
                         </FormControl>
                         <FormLabel>Medical Service</FormLabel>
-
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
               </div>
+
               <FormField
                 control={form.control}
                 name="image"
@@ -483,14 +468,13 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                     <FormDescription>Upload a hotel image</FormDescription>
                     <FormControl>
                       {image ? (
-                        <div className="relative max-w-[400px] min-w-[400px]  max-h-[400px] min-h-[400px] mt-4">
+                        <div className="relative max-w-[400px] min-w-[400px] max-h-[400px] min-h-[400px] mt-4">
                           <Image
                             fill
                             src={image}
                             alt="Hotel image"
                             className="object-cover"
                           />
-
                           <Button
                             onClick={() => handleImageDelete(image)}
                             type="button"
@@ -533,8 +517,8 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
               />
             </div>
 
-            {/* right div  */}
-            <div className="flex-1 flex flex-col gap-5 ">
+            {/* RIGHT */}
+            <div className="flex-1 flex flex-col gap-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <FormField
                   control={form.control}
@@ -545,7 +529,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                       <FormDescription>
                         Please select the country where your hotel is located
                       </FormDescription>
-
                       <Select
                         disabled={isLoading}
                         onValueChange={field.onChange}
@@ -554,7 +537,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                       >
                         <SelectTrigger className="bg-background">
                           <SelectValue
-                            placeholder="Select a country"
+                            placeholder="Select a Country"
                             defaultValue={field.value}
                           />
                         </SelectTrigger>
@@ -572,7 +555,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="state"
@@ -582,7 +564,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                       <FormDescription>
                         Please select the state where your hotel is located
                       </FormDescription>
-
                       <Select
                         disabled={isLoading || !states.length}
                         onValueChange={field.onChange}
@@ -619,7 +600,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                     <FormDescription>
                       Please select the city where your hotel is located
                     </FormDescription>
-
                     <Select
                       disabled={isLoading}
                       onValueChange={field.onChange}
@@ -659,7 +639,6 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                         {...field}
                       />
                     </FormControl>
-
                     <FormMessage />
                   </FormItem>
                 )}
@@ -731,14 +710,11 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                   >
                     {isLoading ? (
                       <>
-                        {" "}
                         <Loader2 className="h-4 w-4 animate-spin" /> Updating
                       </>
                     ) : (
                       <>
-                        {" "}
-                        <Pencil className="h-4 w-4 " />
-                        Update
+                        <Pencil className="h-4 w-4" /> Update
                       </>
                     )}
                   </Button>
@@ -750,23 +726,22 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                   >
                     {isLoading ? (
                       <>
-                        {" "}
                         <Loader2 className="h-4 w-4 animate-spin" /> Creating
                       </>
                     ) : (
                       <>
-                        {" "}
-                        <Pencil className="h-4 w-4 clear" />
-                        Create
+                        <Pencil className="h-4 w-4" /> Create
                       </>
                     )}
                   </Button>
                 )}
               </div>
+
               {hotel && !!hotel.rooms.length && (
                 <div>
+                  <Separator />
                   <h3 className="text-lg font-semibold my-5">Hotel Rooms</h3>
-                  <div className="grid grid-cols-1 2xl:grid-cols-2 gap-5 ">
+                  <div className="grid grid-cols-1 2xl:grid-cols-2 gap-5">
                     {hotel.rooms.map((room) => (
                       <RoomCard key={room.id} hotel={hotel} room={room} />
                     ))}

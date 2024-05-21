@@ -1,4 +1,4 @@
-import { Country, State, City } from "country-state-city";
+import { City, Country, State } from "country-state-city";
 
 export const useLocation = () => {
   const getCountryByCode = (countryCode: string) => {
@@ -18,7 +18,7 @@ export const useLocation = () => {
     return state;
   };
 
-  const getCountrySates = (countryCode: string) => {
+  const getCountryStates = (countryCode: string) => {
     return State.getAllStates().filter(
       (state) => state.countryCode === countryCode
     );
@@ -33,7 +33,7 @@ export const useLocation = () => {
   return {
     getAllCountries: Country.getAllCountries,
     getCountryByCode,
-    getCountrySates,
+    getCountryStates,
     getStateByCode,
     getStateCities,
   };

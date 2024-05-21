@@ -1,4 +1,3 @@
-import { Room } from "@prisma/client";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
