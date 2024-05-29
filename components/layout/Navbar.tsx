@@ -13,7 +13,7 @@ const Navbar = () => {
   const router = useRouter();
   const { userId } = useAuth();
   return (
-    <div className="sticky top-0 border border-b-primary/10 bg-secondary">
+    <div className="sticky top-0 border border-b-primary/10 bg-secondary z-10">
       <Wrapper>
         <div className="flex items-center justify-between">
           <div
