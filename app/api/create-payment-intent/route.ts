@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   const bookingData = {
     ...booking,
     user_name: user.firstName,
-    user_email: user.emailAddresses[0],
+    user_email: user.emailAddresses[0].emailAddress,
     userId: user.id,
     currency: "usd",
     payment_intent_id,
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     // create
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: booking.totalPrice * 100,
+      amount: booking.total_price * 100,
       currency: bookingData.currency,
       automatic_payment_methods: { enabled: true },
     });

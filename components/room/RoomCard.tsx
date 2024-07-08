@@ -162,13 +162,13 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCardProps) => {
         },
         body: JSON.stringify({
           booking: {
-            hotelOwnerId: hotel.userId,
+            hotel_owner_id: hotel.userId,
             hotelId: hotel.id,
             roomId: room.id,
-            startDate: date.from,
-            endDate: date.to,
-            breakfastIncluded: includeBreakfast,
-            totalPrice,
+            start_date: date.from,
+            end_date: date.to,
+            breakfast_facility: includeBreakfast,
+            total_price: totalPrice,
           },
           payment_intent_id: paymentIntentId,
         }),
@@ -188,7 +188,6 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCardProps) => {
           router.push("/book-room");
         })
         .catch((error: any) => {
-          console.log(error);
           toast({
             variant: "destructive",
             description: "error.message",
