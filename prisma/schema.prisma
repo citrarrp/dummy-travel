@@ -26,7 +26,7 @@ model Hotel{
   bar Boolean @default(false)
   laundry Boolean @default(false)
   restaurant Boolean @default(false)
-  swiming_poll Boolean @default(false)
+  swimming_pool Boolean @default(false)
   cineplex Boolean @default(false)
   free_wifi Boolean @default(false)
   sports_zone Boolean @default(false)
@@ -44,7 +44,7 @@ model Room{
   title String
   description String
   bed_count Int @default(0)
-  geust_count Int @default(0)
+  guest_count Int @default(0)
   bathroom_count Int @default(0)
   master_bed Int @default(0)
   king_bed Int @default(0)
