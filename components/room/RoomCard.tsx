@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button, buttonVariants } from "../ui/button";
 import {
   Dialog,
@@ -46,7 +46,7 @@ import axios from "axios";
 import { toast } from "../ui/use-toast";
 import { DatePickerWithRange } from "./DateRangePicker";
 import { DateRange } from "react-day-picker";
-import { differenceInCalendarDays } from "date-fns";
+import { differenceInCalendarDays, eachDayOfInterval } from "date-fns";
 import { Checkbox } from "../ui/checkbox";
 import { useAuth } from "@clerk/nextjs";
 import useBookRoom from "@/hooks/useBookRoom";
@@ -70,8 +70,10 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCardProps) => {
   const [totalPrice, setTotalPrice] = useState(room.room_price);
   const [includeBreakfast, setIncludeBreakfast] = useState<boolean>(false);
   const [days, setDays] = useState<number>(1);
+
   const router = useRouter();
   const { userId } = useAuth();
+
   const pathname = usePathname();
   const isHotelDetailsPage = pathname.includes("hotel-details");
 
@@ -82,6 +84,7 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCardProps) => {
       const dayCount = differenceInCalendarDays(date.to, date.from);
 
       setDays(dayCount);
+
       if (dayCount && room.room_price) {
         if (includeBreakfast && room.breakfast_price) {
           setTotalPrice(
@@ -95,6 +98,25 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCardProps) => {
       }
     }
   }, [date, room.room_price, includeBreakfast, room.breakfast_price]);
+
+  const disabledDates = useMemo(() => {
+    let dates: Date[] = [];
+
+    const roomBookings = bookings.filter(
+      (booking) => booking.roomId === room.id && booking.payment_status
+    );
+
+    roomBookings.forEach((booking) => {
+      const range = eachDayOfInterval({
+        start: new Date(booking.start_date),
+        end: new Date(booking.end_date),
+      });
+
+      dates = [...dates, ...range];
+    });
+
+    return dates;
+  }, [bookings, room.id]);
 
   const handleRoomDelete = (room: Room) => {
     setIsLoading(true);
