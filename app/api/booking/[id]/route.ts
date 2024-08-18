@@ -33,6 +33,7 @@ export async function PATCH(
     return new NextResponse("Internl server error", { status: 500 });
   }
 }
+
 export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
@@ -47,15 +48,49 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
     const booking = await prisma.booking.delete({
       where: {
         id: params.id,
+        end_date: {
+          gt: yesterday,
+        },
       },
     });
 
     return NextResponse.json(booking);
   } catch (error) {
     console.log("ERR at /api/booking/id DELETE", error);
+    return new NextResponse("Internl server error", { status: 500 });
+  }
+}
+
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { userId } = auth();
+
+    if (!params.id) {
+      return new NextResponse("Hotel id is required.", { status: 400 });
+    }
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const bookings = await prisma.booking.findMany({
+      where: {
+        payment_status: true,
+        roomId: params.id,
+      },
+    });
+
+    return NextResponse.json(bookings);
+  } catch (error) {
+    console.log("ERR at /api/booking/id GET", error);
     return new NextResponse("Internl server error", { status: 500 });
   }
 }
