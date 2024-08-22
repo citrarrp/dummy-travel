@@ -345,7 +345,11 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCardProps) => {
             <div className="flex flex-col gap-5">
               <div className="mb-2">
                 <div>Select days that you will spend in this room</div>
-                <DatePickerWithRange date={date} setDate={setDate} />
+                <DatePickerWithRange
+                  date={date}
+                  setDate={setDate}
+                  disabledDates={disabledDates}
+                />
               </div>
               {room.breakfast_price > 0 && (
                 <div>

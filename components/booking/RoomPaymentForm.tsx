@@ -1,23 +1,21 @@
 "use client";
 
 import useBookRoom from "@/hooks/useBookRoom";
+import { Booking } from "@prisma/client";
 import {
   AddressElement,
   PaymentElement,
   useElements,
   useStripe,
 } from "@stripe/react-stripe-js";
-import { useEffect, useState } from "react";
-import { useToast } from "../ui/use-toast";
-import { Separator } from "../ui/separator";
-import moment from "moment";
-import { Button } from "../ui/button";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import { error } from "console";
-import { Booking } from "@prisma/client";
 import { endOfDay, isWithinInterval, startOfDay } from "date-fns";
-import { date } from "zod";
+import moment from "moment";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
+import { useToast } from "../ui/use-toast";
 
 interface Props {
   clientSecret: string;
@@ -150,8 +148,8 @@ const RoomPaymentForm = ({ clientSecret, handlePaymentSuccess }: Props) => {
     }
   };
 
-  const startDate = moment(bookedRoomData?.startDate).format("DD MM YYY");
-  const endDate = moment(bookedRoomData?.endDate).format("DD MM YYY");
+  const startDate = moment(bookedRoomData?.startDate).format("DD MM YYYY");
+  const endDate = moment(bookedRoomData?.endDate).format("DD MM YYYY");
 
   return (
     <form onSubmit={handleSubmit} id="payment-form">

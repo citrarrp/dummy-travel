@@ -57,7 +57,7 @@ const HotelCard = ({ hotel }: props) => {
               </span>
             )}
 
-            {hotel.swiming_poll && (
+            {hotel.swimming_pool && (
               <span className="flex items-center gap-2">
                 <Waves className="h-4 w-4" />
                 Swiming Pool
