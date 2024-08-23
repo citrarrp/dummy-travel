@@ -1,7 +1,6 @@
 "use client";
 
 import useBookRoom from "@/hooks/useBookRoom";
-import { Booking } from "@prisma/client";
 import {
   AddressElement,
   PaymentElement,
@@ -9,13 +8,14 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import axios from "axios";
-import { endOfDay, isWithinInterval, startOfDay } from "date-fns";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { useToast } from "../ui/use-toast";
+import { Booking } from "@prisma/client";
+import { endOfDay, isWithinInterval, startOfDay } from "date-fns";
 
 interface Props {
   clientSecret: string;
@@ -30,14 +30,14 @@ type DateRangesType = {
 function hasOverlap(
   startDate: Date,
   endDate: Date,
-  dateRaanges: DateRangesType[]
+  dateRanges: DateRangesType[]
 ) {
   const targetInterval = {
     start: startOfDay(new Date(startDate)),
     end: endOfDay(new Date(endDate)),
   };
 
-  for (const range of dateRaanges) {
+  for (const range of dateRanges) {
     const rangeStart = startOfDay(new Date(range.startDate));
     const rangeEnd = endOfDay(new Date(range.endDate));
 
@@ -55,6 +55,7 @@ function hasOverlap(
       return true;
     }
   }
+
   return false;
 }
 
@@ -64,6 +65,7 @@ const RoomPaymentForm = ({ clientSecret, handlePaymentSuccess }: Props) => {
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
   const router = useRouter();
 
   useEffect(() => {
@@ -88,7 +90,7 @@ const RoomPaymentForm = ({ clientSecret, handlePaymentSuccess }: Props) => {
     }
 
     try {
-      //date-overlaps
+      // date overlaps
       const bookings = await axios.get(
         `/api/booking/${bookedRoomData.room.id}`
       );
@@ -123,7 +125,7 @@ const RoomPaymentForm = ({ clientSecret, handlePaymentSuccess }: Props) => {
               .patch(`/api/booking/${result.paymentIntent.id}`)
               .then((res) => {
                 toast({
-                  description: "Room reservation is done!",
+                  description: "Room Reservation is done!",
                 });
                 router.refresh();
                 resetBookRoom();
@@ -134,7 +136,7 @@ const RoomPaymentForm = ({ clientSecret, handlePaymentSuccess }: Props) => {
                 console.log(error);
                 toast({
                   variant: "destructive",
-                  description: "Room reservation is failde!",
+                  description: "Room Reservation is failed!",
                 });
                 setIsLoading(false);
               });
@@ -165,8 +167,8 @@ const RoomPaymentForm = ({ clientSecret, handlePaymentSuccess }: Props) => {
         <Separator />
         <div className="flex flex-col gap-2">
           <h2 className="font-semibold mb-2 text-lg">Your Booking Summary</h2>
-          <p>You Will check-in on {startDate} at 12PM</p>
-          <p>You Will check-out on {endDate} at 12PM</p>
+          <p>You will check-in on {startDate} at 12PM</p>
+          <p>You will check-out on {endDate} at 12PM</p>
           {bookedRoomData?.breakfastIncluded && (
             <p>You will be served breakfast each day at 8AM</p>
           )}
