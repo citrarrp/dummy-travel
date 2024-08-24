@@ -1,6 +1,6 @@
+import prisma from "@/lib/db";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
-import prisma from "@/lib/db";
 
 export async function PATCH(
   req: Request,
@@ -14,6 +14,7 @@ export async function PATCH(
         status: 400,
       });
     }
+
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
@@ -30,7 +31,7 @@ export async function PATCH(
     return NextResponse.json(booking);
   } catch (error) {
     console.log("ERR at /api/booking/id PATCH", error);
-    return new NextResponse("Internl server error", { status: 500 });
+    return new NextResponse("Internal server error", { status: 500 });
   }
 }
 
@@ -44,26 +45,21 @@ export async function DELETE(
     if (!params.id) {
       return new NextResponse("Booking id is required.", { status: 400 });
     }
+
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-
     const booking = await prisma.booking.delete({
       where: {
         id: params.id,
-        end_date: {
-          gt: yesterday,
-        },
       },
     });
 
     return NextResponse.json(booking);
   } catch (error) {
     console.log("ERR at /api/booking/id DELETE", error);
-    return new NextResponse("Internl server error", { status: 500 });
+    return new NextResponse("Internal server error", { status: 500 });
   }
 }
 
@@ -77,20 +73,27 @@ export async function GET(
     if (!params.id) {
       return new NextResponse("Hotel id is required.", { status: 400 });
     }
+
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
+
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
 
     const bookings = await prisma.booking.findMany({
       where: {
         payment_status: true,
         roomId: params.id,
+        end_date: {
+          gt: yesterday,
+        },
       },
     });
 
     return NextResponse.json(bookings);
   } catch (error) {
     console.log("ERR at /api/booking/id GET", error);
-    return new NextResponse("Internl server error", { status: 500 });
+    return new NextResponse("Internal server error", { status: 500 });
   }
 }
