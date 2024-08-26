@@ -1,4 +1,4 @@
-#"Travel Nest: A Secure, Full-Stack Hotel Booking Platform Built with Next.js and Advanced Web Technologies"
+# Travel Nest: A Secure, Full-Stack Hotel Booking Platform Built with Next.js and Advanced Web Technologies
 
 Travel Nest is a full-stack hotel booking application built with modern technologies like Next.js, React.js, and TypeScript. It offers users a seamless experience for booking rooms across various hotels, featuring a secure payment system and robust authentication to protect user data. With its intuitive design, users can easily create, update, and manage their own hotels. Combining advanced technology with user-friendly features, Travel Nest is a reliable and convenient solution in the hotel booking industry.
 
@@ -35,7 +35,7 @@ Clone the project
 Go to the project directory
 
 ```bash
-  cd elysian-feeds-client
+  cd travel-nest
 ```
 
 Install dependencies
@@ -54,13 +54,18 @@ Start the server
 
 To run this project, you will need to add the following environment variables to your .env file
 
-`NEXT_PUBLIC_BASE_URL`
-
-`NEXT_PUBLIC_EMAILJS_SERVICE_ID`
-
-`NEXT_PUBLIC_EMAILJS_TEMPLATE_ID`
-
-`NEXT_PUBLIC_EMAILJS_PUBLIC_ID`
+`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+`CLERK_SECRET_KEY`
+`NEXT_PUBLIC_CLERK_SIGN_IN_URL`
+`NEXT_PUBLIC_CLERK_SIGN_UP_URL`
+`NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL`
+`NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL`
+`POSTGRES_PRISMA_URL`
+`POSTGRES_URL_NON_POOLING`
+`UPLOADTHING_SECRET`
+`UPLOADTHING_APP_ID`
+`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+`STRIPE_SECRET_KEY`
 
 ## Feedback
 
