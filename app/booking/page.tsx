@@ -256,7 +256,7 @@ function Booking() {
   );
 }
 
-// export default BookingForm;
+export default Booking;
 
 export function BookingForm() {
   return (
