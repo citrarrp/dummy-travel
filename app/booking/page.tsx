@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import PaymentModal from "@/components/payment";
 import { Suspense } from "react";
 
-function Booking() {
+const Booking = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -254,10 +254,9 @@ function Booking() {
       </div>
     </Suspense>
   );
-}
+};
 
 export default Booking;
-
 export function BookingForm() {
   return (
     <Suspense fallback={<div>Loading Booking Form...</div>}>
