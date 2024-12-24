@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import PaymentModal from "@/components/payment";
+import { Suspense } from "react";
 
 const BookingForm = () => {
   const router = useRouter();
@@ -120,132 +121,138 @@ const BookingForm = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-6 bg-gray-50 rounded-lg shadow-md w-full max-w-2xl mx-auto">
-      <h2 className="text-3xl font-bold mb-4 text-black">Formulir Pemesanan</h2>
-      <form onSubmit={(e) => e.preventDefault()} className="w-full">
-        <div className="bg-white rounded-lg shadow-lg p-4 mb-4">
-          <h3 className="text-xl font-semibold mb-2">
-            Penumpang {currentStep + 1}
-          </h3>
-          <div className="flex flex-col gap-4">
-            <input
-              type="text"
-              name="nik"
-              value={formData[currentStep]?.nik || ""}
-              onChange={handleInputChange}
-              placeholder="NIK"
-              className="p-2 border rounded-md"
-              required
-            />
-            <input
-              type="text"
-              name="nama"
-              value={formData[currentStep]?.nama || ""}
-              onChange={handleInputChange}
-              placeholder="Nama"
-              className="p-2 border rounded-md"
-              required
-            />
-            <input
-              type="email"
-              name="email"
-              value={formData[currentStep]?.email || ""}
-              onChange={handleInputChange}
-              placeholder="Email"
-              className="p-2 border rounded-md"
-            />
-            <input
-              type="text"
-              name="nomor_telepon"
-              value={formData[currentStep]?.nomor_telepon || ""}
-              onChange={handleInputChange}
-              placeholder="Nomor Telepon"
-              className="p-2 border rounded-md"
-              required
-            />
-            <input
-              type="text"
-              name="kota"
-              value={formData[currentStep]?.kota || ""}
-              onChange={handleInputChange}
-              placeholder="Kota"
-              className="p-2 border rounded-md"
-              required
-            />
-            <input
-              type="date"
-              name="tanggal_lahir"
-              value={formData[currentStep]?.tanggal_lahir || ""}
-              onChange={handleInputChange}
-              className="p-2 border rounded-md"
-              required
-            />
+    <Suspense>
+      <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-6 bg-gray-50 rounded-lg shadow-md w-full max-w-2xl mx-auto">
+        <h2 className="text-3xl font-bold mb-4 text-black">
+          Formulir Pemesanan
+        </h2>
+        <form onSubmit={(e) => e.preventDefault()} className="w-full">
+          <div className="bg-white rounded-lg shadow-lg p-4 mb-4">
+            <h3 className="text-xl font-semibold mb-2">
+              Penumpang {currentStep + 1}
+            </h3>
+            <div className="flex flex-col gap-4">
+              <input
+                type="text"
+                name="nik"
+                value={formData[currentStep]?.nik || ""}
+                onChange={handleInputChange}
+                placeholder="NIK"
+                className="p-2 border rounded-md"
+                required
+              />
+              <input
+                type="text"
+                name="nama"
+                value={formData[currentStep]?.nama || ""}
+                onChange={handleInputChange}
+                placeholder="Nama"
+                className="p-2 border rounded-md"
+                required
+              />
+              <input
+                type="email"
+                name="email"
+                value={formData[currentStep]?.email || ""}
+                onChange={handleInputChange}
+                placeholder="Email"
+                className="p-2 border rounded-md"
+              />
+              <input
+                type="text"
+                name="nomor_telepon"
+                value={formData[currentStep]?.nomor_telepon || ""}
+                onChange={handleInputChange}
+                placeholder="Nomor Telepon"
+                className="p-2 border rounded-md"
+                required
+              />
+              <input
+                type="text"
+                name="kota"
+                value={formData[currentStep]?.kota || ""}
+                onChange={handleInputChange}
+                placeholder="Kota"
+                className="p-2 border rounded-md"
+                required
+              />
+              <input
+                type="date"
+                name="tanggal_lahir"
+                value={formData[currentStep]?.tanggal_lahir || ""}
+                onChange={handleInputChange}
+                className="p-2 border rounded-md"
+                required
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Payment Information */}
-        <div className="bg-gray-100 rounded-lg shadow-lg p-4 mb-4">
-          <h3 className="text-xl font-semibold mb-2">Informasi Pembayaran</h3>
-          <div className="flex justify-between mb-2">
-            <span>Harga Tour</span>
-            <span>Rp {tourPrice.toLocaleString()}</span>
+          {/* Payment Information */}
+          <div className="bg-gray-100 rounded-lg shadow-lg p-4 mb-4">
+            <h3 className="text-xl font-semibold mb-2">Informasi Pembayaran</h3>
+            <div className="flex justify-between mb-2">
+              <span>Harga Tour</span>
+              <span>Rp {tourPrice.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between mb-2">
+              <span>Harga Tiket Perjalanan</span>
+              <span>
+                Rp {(totalPrice / selectedSeatsCount).toLocaleString()}
+              </span>
+            </div>
+            <div className="flex justify-between font-bold">
+              <span>Total Keseluruhan</span>
+              <span>
+                Rp{" "}
+                {(
+                  (totalPrice / selectedSeatsCount + tourPrice) *
+                  selectedSeatsCount
+                ).toLocaleString()}
+              </span>
+            </div>
           </div>
-          <div className="flex justify-between mb-2">
-            <span>Harga Tiket Perjalanan</span>
-            <span>Rp {(totalPrice / selectedSeatsCount).toLocaleString()}</span>
-          </div>
-          <div className="flex justify-between font-bold">
-            <span>Total Keseluruhan</span>
-            <span>
-              Rp{" "}
-              {(
-                (totalPrice / selectedSeatsCount + tourPrice) *
-                selectedSeatsCount
-              ).toLocaleString()}
-            </span>
-          </div>
-        </div>
 
-        {/* Step Navigation */}
-        <div className="flex justify-between">
-          {currentStep > 0 && (
-            <Button type="button" onClick={handlePrevStep} className="mb-4">
-              Langkah Sebelumnya
-            </Button>
-          )}
-          {currentStep < selectedSeatsCount - 1 ? (
-            <Button type="button" onClick={handleNextStep} className="mb-4">
-              Langkah Berikutnya
-            </Button>
-          ) : (
-            <Button type="button" onClick={handleSubmit} className="mb-4">
-              Lanjut ke Pembayaran
-            </Button>
-          )}
-        </div>
-      </form>
+          {/* Step Navigation */}
+          <div className="flex justify-between">
+            {currentStep > 0 && (
+              <Button type="button" onClick={handlePrevStep} className="mb-4">
+                Langkah Sebelumnya
+              </Button>
+            )}
+            {currentStep < selectedSeatsCount - 1 ? (
+              <Button type="button" onClick={handleNextStep} className="mb-4">
+                Langkah Berikutnya
+              </Button>
+            ) : (
+              <Button type="button" onClick={handleSubmit} className="mb-4">
+                Lanjut ke Pembayaran
+              </Button>
+            )}
+          </div>
+        </form>
 
-      {showPaymentModal && (
-        <PaymentModal
-          onClose={() => setShowPaymentModal(false)}
-          onSuccess={handlePaymentSuccess}
-          bookingData={{
-            passengers: formData.map((data, index) => ({
-              ...data,
-              seat: selectedSeats[index], // Ensure each passenger gets the correct seat
-              route, // Pass route to each passenger
-              waktu_berangkat, // Pass waktu_berangkat to each passenger
-              waktu_tiba, // Pass waktu_tiba to each passenger
-              tanggal, // Pass tanggal to each passenger
-            })),
-            totalPrice,
-            destination,
-            qrCodeUrl:
-              "https://media.istockphoto.com/id/518484289/photo/close-up-of-qr-code-example.webp?b=1&s=170667a&w=0&k=20&c=wcOxBbduA7iOsvKCXgNnBLvNjYGRY9rrOvdzawGZymc=", // Add QR code URL
-          }}
-        />
-      )}
-    </div>
+        {showPaymentModal && (
+          <PaymentModal
+            onClose={() => setShowPaymentModal(false)}
+            onSuccess={handlePaymentSuccess}
+            bookingData={{
+              passengers: formData.map((data, index) => ({
+                ...data,
+                seat: selectedSeats[index], // Ensure each passenger gets the correct seat
+                route, // Pass route to each passenger
+                waktu_berangkat, // Pass waktu_berangkat to each passenger
+                waktu_tiba, // Pass waktu_tiba to each passenger
+                tanggal, // Pass tanggal to each passenger
+              })),
+              totalPrice,
+              destination,
+              qrCodeUrl:
+                "https://media.istockphoto.com/id/518484289/photo/close-up-of-qr-code-example.webp?b=1&s=170667a&w=0&k=20&c=wcOxBbduA7iOsvKCXgNnBLvNjYGRY9rrOvdzawGZymc=", // Add QR code URL
+            }}
+          />
+        )}
+      </div>
+    </Suspense>
   );
 };
 
