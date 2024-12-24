@@ -1,8 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
-@layer base {
+
+/* @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -64,8 +64,143 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
   }
+} */
+@layer base {
+  :root {
+    --background: 33 100% 95%; /* Orange muda */
+    --foreground: 33 90% 30%; /* Lebih gelap dari background */
+
+    --card: 33 100% 95%;
+    --card-foreground: 33 90% 30%;
+
+    --popover: 33 100% 95%;
+    --popover-foreground: 33 90% 30%;
+
+    --primary: 33 85% 40%;
+    --primary-foreground: 33 100% 98%;
+
+    --secondary: 33 90% 92%;
+    --secondary-foreground: 33 85% 40%;
+
+    --muted: 33 90% 92%;
+    --muted-foreground: 33 80% 50%;
+
+    --accent: 33 90% 92%;
+    --accent-foreground: 33 85% 40%;
+
+    --destructive: 0 84% 70%;
+    --destructive-foreground: 33 100% 98%;
+
+    --border: 33 90% 88%;
+    --input: 33 90% 88%;
+    --ring: 33 90% 30%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 220 40% 10%; /* Biru gelap */
+    --foreground: 220 30% 90%; /* Kontras terang */
+
+    --card: 220 40% 10%;
+    --card-foreground: 220 30% 90%;
+
+    --popover: 220 40% 10%;
+    --popover-foreground: 220 30% 90%;
+
+    --primary: 220 35% 25%;
+    --primary-foreground: 220 40% 90%;
+
+    --secondary: 220 35% 20%;
+    --secondary-foreground: 220 30% 90%;
+
+    --muted: 220 35% 20%;
+    --muted-foreground: 220 40% 70%;
+
+    --accent: 220 35% 20%;
+    --accent-foreground: 220 30% 90%;
+
+    --destructive: 0 62% 35%;
+    --destructive-foreground: 220 30% 90%;
+
+    --border: 220 35% 20%;
+    --input: 220 35% 20%;
+    --ring: 220 30% 85%;
+  }
 }
- 
+/* .animate-slide {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+
+.animate-slide:hover {
+  transform: translateX(-100%);
+}
+  */
+
+/* @keyframes slide {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(0); }
+  }
+  
+  .animate-slide {
+    animation: slide 0.5s ease-in-out;
+  }
+   */
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px;
+}
+
+.card {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  width: 100%;
+}
+
+.card h3 {
+  margin-bottom: 16px;
+}
+
+.transport-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.transport-detail {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  gap: 16px;
+}
+
+.transport-detail .icon {
+  font-size: 24px;
+  color: #007bff;
+  flex-shrink: 0;
+}
+
+.transport-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.transport-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}
+
 @layer base {
   * {
     @apply border-border;

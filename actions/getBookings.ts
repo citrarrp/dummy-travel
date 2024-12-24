@@ -1,14 +1,14 @@
 import prisma from "@/lib/db";
 
-export const getBookings = async (hotelId: string) => {
+export const getBookings = async (id_booking: number) => {
   try {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
 
     const bookings = await prisma.booking.findMany({
       where: {
-        hotelId,
-        end_date: {
+        id_booking,
+        tanggal_pemesanan: {
           gt: yesterday,
         },
       },

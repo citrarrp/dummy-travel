@@ -6,14 +6,15 @@ import Navbar from "@/components/layout/Navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import Wrapper from "@/components/Wrapper";
 import { Toaster } from "@/components/ui/toaster";
+import Footer from "@/components/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Travel Nest",
-  description: "Book your desird hotel and enjoy!",
+  description: "Pesan Travel di Indonesia!",
   icons: {
-    icon: "/icons/logo.png.png",
+    icon: "/icons/Logo.png",
   },
 };
 
@@ -38,6 +39,7 @@ export default function RootLayout({
               <section className="flex-grow">
                 <Wrapper>{children}</Wrapper>
               </section>
+              <Footer />
             </main>
           </ThemeProvider>
         </body>

@@ -1,90 +1,176 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
-model Hotel{
-  id String @id @default(uuid())
-  title String 
-  description String
-  image String
-  country String
-  state String
-  city String
-  locationDescription String
-  gym Boolean @default(false)
-  spa Boolean @default(false)
-  bar Boolean @default(false)
-  laundry Boolean @default(false)
-  restaurant Boolean @default(false)
-  swimming_pool Boolean @default(false)
-  cineplex Boolean @default(false)
-  free_wifi Boolean @default(false)
-  sports_zone Boolean @default(false)
-  medical_service Boolean @default(false)
-  userId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  
-  rooms Room[]
-  bookings Booking[]
+model Booking {
+  id_booking        Int                        @id @default(autoincrement())
+  id_user           Int?
+  tanggal_pemesanan DateTime                   @default(now()) @db.Timestamp(0)
+  status_pembayaran booking_status_pembayaran?
+  user              user?                      @relation(fields: [id_user], references: [id_user], onDelete: Restrict, onUpdate: Restrict, map: "booking_ibfk_1")
+  pembayaran        pembayaran[]
+  penumpang   penumpang[] 
+
+  @@index([id_user], map: "id_user")
+  @@map("booking")
 }
 
-model Room{
-  id String @id @default(uuid())
-  title String
-  description String
-  bed_count Int @default(0)
-  guest_count Int @default(0)
-  bathroom_count Int @default(0)
-  master_bed Int @default(0)
-  king_bed Int @default(0)
-  queen_bed Int @default(0)
-  image String
-  room_price Int
-  breakfast_price Int
-  tv Boolean @default(false)
-  air_condition Boolean @default(false)
-  fridge Boolean @default(false)
-  balcony Boolean @default(false)
-  ocean_view Boolean @default(false)
-  forest_view Boolean @default(false)
-  mountain_view Boolean @default(false)
-  free_wifi Boolean @default(false)
-  sound_proof Boolean @default(false)
-  room_service Boolean @default(false)
-  hotelId String
-  bookings Booking[]
-  hotel Hotel @relation(fields:[hotelId], references: [id], onDelete: Cascade)
-  
+model Destinasi {
+  id_destinasi                  Int                  @id @default(autoincrement())
+  nama_destinasi                String?              @db.VarChar(100)
+  deskripsi                     String?              @db.Text
+  lokasi                        String?              @db.VarChar(255)
+  link_gambar                   String?              @db.VarChar(255)
+  harga                         Int?
+  destinasitransport            DestinasiTransport[]
+  tiket_tiket_asalTodestinasi   tiket[]              @relation("tiket_asalTodestinasi")
+  tiket_tiket_tujuanTodestinasi tiket[]              @relation("tiket_tujuanTodestinasi")
+
+  @@map("destinasi")
 }
 
-model Booking{
-  id String @id @default(uuid())
-  userId String
-  user_name String
-  user_email String
-  hotelId String
-  roomId String
-  hotel_owner_id String
-  start_date DateTime
-  end_date DateTime
-  breakfast_facility Boolean @default(false)
-  currency String
-  total_price Int
-  payment_status Boolean @default(false)
-  payment_intent_id String @unique
-  bookedAt DateTime @default(now())
+model DestinasiTransport {
+  id_package               Int                        @id
+  id_destinasi             Int
+  destinasi                Destinasi                  @relation(fields: [id_destinasi], references: [id_destinasi], onDelete: Cascade, onUpdate: Restrict, map: "destinasitransport_ibfk_1")
+  package_transport_detail package_transport_detail[]
 
-  hotel Hotel @relation(fields: [hotelId], references: [id], onDelete: Cascade)
-  room Room @relation(fields:[roomId], references: [id], onDelete: Cascade)
+  @@index([id_destinasi], map: "id_destinasi")
+  @@map("destinasitransport")
+}
+
+model jadwal_transportasi {
+  id_jadwal       Int           @id @default(autoincrement())
+  id_transportasi Int?
+  waktu_berangkat DateTime?     @db.Time(0)
+  waktu_tiba      DateTime?     @db.Time(0)
+  tanggal         DateTime?     @db.Date
+  transportasi    transportasi? @relation(fields: [id_transportasi], references: [id_transportasi], onDelete: Restrict, onUpdate: Restrict, map: "jadwal_transportasi_ibfk_1")
+
+  @@index([id_transportasi], map: "id_transportasi")
+}
+
+model notification {
+  id_notification Int                  @id @default(autoincrement())
+  id_user         Int?
+  pesan           String?              @db.Text
+  status          notification_status? @default(Unread)
+  tanggal_kirim   DateTime             @default(now()) @db.Timestamp(0)
+  user            user?                @relation(fields: [id_user], references: [id_user], onDelete: Restrict, onUpdate: Restrict, map: "notification_ibfk_1")
+
+  @@index([id_user], map: "id_user")
+}
+
+model package_transport_detail {
+  id_transportPackage Int                 @id @default(autoincrement())
+  id_package          Int?
+  id_transportasi     Int?
+  urutan_rute         Int?
+  destinasitransport  DestinasiTransport? @relation(fields: [id_package], references: [id_package], onDelete: Cascade, map: "fk_package")
+  transportasi        transportasi?       @relation(fields: [id_transportasi], references: [id_transportasi], onDelete: Restrict, onUpdate: Restrict, map: "package_transport_detail_ibfk_1")
+
+  @@index([id_package], map: "id_package")
+  @@index([id_transportasi], map: "id_transportasi")
+}
+
+model penumpang {
+  id_penumpang   Int       @id @default(autoincrement())
+  id_booking      Int?
+  nik             String    @unique @db.VarChar(16)
+  nama            String    @db.VarChar(255)
+  email           String?   @db.VarChar(255)
+  nomor_telepon   String    @db.VarChar(20)
+  kota            String    @db.VarChar(100)
+  tanggal_lahir   DateTime
+  booking         Booking?   @relation(fields: [id_booking], references: [id_booking], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("penumpang") 
+}
+
+model pembayaran {
+  id_pembayaran      Int      @id @default(autoincrement())
+  id_booking         Int?
+  metode_pembayaran  String?  @db.VarChar(50)
+  jumlah_bayar       Decimal? @db.Decimal(10, 2)
+  tanggal_pembayaran DateTime @default(now()) @db.Timestamp(0)
+  qr_code            String?  @db.VarChar(255)
+  barcode            String?  @db.VarChar(255)
+  booking            Booking? @relation(fields: [id_booking], references: [id_booking], onDelete: Restrict, onUpdate: Restrict, map: "pembayaran_ibfk_1")
+
+  @@index([id_booking], map: "id_booking")
+}
+
+model tempat {
+  id_tempat       Int           @id @default(autoincrement())
+  id_transportasi Int?
+  no_seat         String?       @db.VarChar(10)
+  status          Int?      @default(0)
+  harga           Int    
+  kelas           String?       @db.VarChar(10)
+  transportasi    transportasi? @relation(fields: [id_transportasi], references: [id_transportasi], onDelete: Restrict, onUpdate: Restrict, map: "tempat_ibfk_1")
+
+  @@index([id_transportasi], map: "id_transportasi")
+}
+
+model tiket {
+  id_tiket                          Int           @id @default(autoincrement())
+  asal                              Int?
+  tujuan                            Int?
+  tanggal_keberangkatan             DateTime?     @db.Date
+  waktu_keberangkatan               DateTime?     @db.Time(0)
+  waktu_tiba                        DateTime?     @db.Time(0)
+  harga                             Decimal?      @db.Decimal(10, 2)
+  durasi                            String?       @db.VarChar(50)
+  id_transportasi                   Int?
+  id_booking                        Int
+  id_penumpang                      Int
+  no_seat                           String        @db.VarChar(25)
+ 
+  destinasi_tiket_asalTodestinasi   Destinasi?    @relation("tiket_asalTodestinasi", fields: [asal], references: [id_destinasi], onDelete: Restrict, onUpdate: Restrict, map: "tiket_ibfk_1")
+  destinasi_tiket_tujuanTodestinasi Destinasi?    @relation("tiket_tujuanTodestinasi", fields: [tujuan], references: [id_destinasi], onDelete: Restrict, onUpdate: Restrict, map: "tiket_ibfk_2")
+  transportasi                      transportasi? @relation(fields: [id_transportasi], references: [id_transportasi], onDelete: Restrict, onUpdate: Restrict, map: "tiket_ibfk_3")
+
+  @@index([asal], map: "asal")
+  @@index([id_transportasi], map: "id_transportasi")
+  @@index([tujuan], map: "tujuan")
+}
+
+model transportasi {
+  id_transportasi          Int                        @id @default(autoincrement())
+  jenis_transportasi       String?                    @db.VarChar(50)
+  kapasitas                Int?
+  fasilitas                String?                    @db.Text
+  harga                    Int
+  rute                     String?                    @db.VarChar(255)
+  jadwal_transportasi      jadwal_transportasi[]
+  package_transport_detail package_transport_detail[]
+  tempat                   tempat[]
+  tiket                    tiket[]
+}
+
+model user {
+  id_user        Int            @id @default(autoincrement())
+  nama_lengkap   String?        @db.VarChar(100)
+  email          String?        @unique(map: "email") @db.VarChar(100)
+  password       String?        @db.VarChar(255)
+  no_telepon     String?        @db.VarChar(15)
+  tanggal_daftar DateTime       @default(now()) @db.Timestamp(0)
+  booking        Booking[]
+  notification   notification[]
+}
+
+enum notification_status {
+  Unread
+  Read
+}
+
+enum booking_status_pembayaran {
+  Pending
+  Paid
+  Canceled
 }

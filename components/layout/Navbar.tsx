@@ -5,35 +5,55 @@ import Wrapper from "../Wrapper";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
-import SearchBar from "../SearchBar";
+// import SearchBar from "../SearchBar";
 import { ModeToggle } from "../mode-toggle";
-import { NavMenu } from "./NavMenu";
+// import { NavMenu } from "./NavMenu";
+import Link from "next/link";
 
 const Navbar = () => {
   const router = useRouter();
   const { userId } = useAuth();
   return (
-    <div className="sticky top-0 border border-b-primary/10 bg-secondary z-10">
+    <div className="sticky top-0 border border-b-secondary/10 bg-primary z-10 text-white">
       <Wrapper>
         <div className="flex items-center justify-between">
           <div
             onClick={() => router.push("/")}
             className="flex items-center gap-2 cursor-pointer"
           >
-            <Image
-              src="/icons/logo.png.png"
-              alt="logo"
-              width={50}
-              height={50}
-            />
-            <div className="font-bold text-xl">Travel Nest</div>
+            <Image src="/icons/Logo.png" alt="logo" width={250} height={150} />
           </div>
 
-          <SearchBar />
+          <nav className="hidden space-x-6 md:flex">
+            <Link
+              className="font-medium text-sm transition-colors hover:text-[#FF6B6B]"
+              href="/explore"
+            >
+              Explore
+            </Link>
+            <Link
+              className="font-medium text-sm transition-colors hover:text-[#FF6B6B]"
+              href="/destinations"
+            >
+              Destinations
+            </Link>
+            <Link
+              className="font-medium text-sm transition-colors hover:text-[#FF6B6B]"
+              href="#"
+            >
+              My Trips
+            </Link>
+            <Link
+              className="font-medium text-sm transition-colors hover:text-[#FF6B6B]"
+              href="#"
+            >
+              Community
+            </Link>
+          </nav>
 
           <div className="flex items-center gap-3">
             <ModeToggle />
-            <NavMenu />
+            {/* <NavMenu /> */}
             {userId ? (
               <UserButton afterSignOutUrl="/" />
             ) : (
@@ -41,6 +61,7 @@ const Navbar = () => {
                 <Button
                   variant="outline"
                   onClick={() => router.push("/sign-in")}
+                  className="text-black"
                 >
                   Sign in
                 </Button>
